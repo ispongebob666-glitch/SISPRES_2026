@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+@theme {
+  /* Font yang benar-benar dipakai (sebelumnya dimuat tapi tidak pernah diterapkan) */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /* Semua tebal teks diturunkan satu tingkat, dan hanya memakai bobot yang
+     memang dimuat dari Google Fonts (400-800). Tidak ada lagi bobot 900. */
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 700;
+  --font-weight-black: 800;
+}
+
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

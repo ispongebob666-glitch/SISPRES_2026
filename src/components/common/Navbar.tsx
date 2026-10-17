@@ -41,16 +41,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               <img
                 src={logo1Url}
                 alt="Logo 1"
-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-xl p-1 bg-white/10 backdrop-blur border border-amber-300/60 shadow-md group-hover:scale-105 transition-transform"
+                className="h-10 sm:h-12 w-auto max-w-[80px] object-contain group-hover:scale-105 transition-transform"
               />
             ) : (
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/20 border-2 border-white/40 group-hover:scale-105 transition-transform">
                 <span className="text-lg sm:text-xl">🏛️</span>
               </div>
             )}
-            <span className="absolute -bottom-1 -right-1 text-[8px] font-black bg-amber-400 text-slate-950 px-1 py-0.2 rounded-full border border-slate-900 font-mono">
+            {!logo1Url && (
+              <span className="absolute -bottom-1 -right-1 text-[8px] font-black bg-amber-400 text-slate-950 px-1 py-0.2 rounded-full border border-slate-900 font-mono">
               L1
             </span>
+            )}
           </div>
 
           {/* Logo 2 (Logo Lomba / SISPRES) */}
@@ -59,16 +61,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               <img
                 src={logo2Url}
                 alt="Logo 2"
-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-xl p-1 bg-white/10 backdrop-blur border border-emerald-300/60 shadow-md group-hover:scale-105 transition-transform"
+                className="h-10 sm:h-12 w-auto max-w-[80px] object-contain group-hover:scale-105 transition-transform"
               />
             ) : (
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white flex items-center justify-center font-black shadow-lg shadow-emerald-500/20 border-2 border-emerald-300/50 group-hover:scale-105 transition-transform">
                 <Award className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300 drop-shadow-md" />
               </div>
             )}
-            <span className="absolute -bottom-1 -right-1 text-[8px] font-black bg-emerald-400 text-slate-950 px-1 py-0.2 rounded-full border border-slate-900 font-mono">
+            {!logo2Url && (
+              <span className="absolute -bottom-1 -right-1 text-[8px] font-black bg-emerald-400 text-slate-950 px-1 py-0.2 rounded-full border border-slate-900 font-mono">
               L2
             </span>
+            )}
           </div>
 
           {/* Dual Titles: Judul 1 & Judul 2 */}

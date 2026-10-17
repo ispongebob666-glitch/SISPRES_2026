@@ -367,7 +367,7 @@ export const AdminSettings: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">URL Logo 1 (Penyelenggara)</label>
+                    <label className="block font-bold text-slate-700 mb-1">URL Logo 1 (pojok kiri atas)</label>
                     <input
                       type="text"
                       value={settings.logo1_url || ''}
@@ -377,12 +377,35 @@ export const AdminSettings: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">URL Logo 2 (Logo Event)</label>
+                    <label className="block font-bold text-slate-700 mb-1">URL Logo 2 (pojok kiri atas)</label>
                     <input
                       type="text"
                       value={settings.logo2_url || ''}
                       onChange={(e) => setSettings({ ...settings, logo2_url: e.target.value })}
                       placeholder="https://... (PNG/SVG)"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">URL Logo 3 (tengah halaman login)</label>
+                    <input
+                      type="text"
+                      value={settings.logo3_url || ''}
+                      onChange={(e) => setSettings({ ...settings, logo3_url: e.target.value })}
+                      placeholder="/logo3.png"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">URL Logo 4 (tengah halaman login)</label>
+                    <input
+                      type="text"
+                      value={settings.logo4_url || ''}
+                      onChange={(e) => setSettings({ ...settings, logo4_url: e.target.value })}
+                      placeholder="/logo4.png"
                       className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
                     />
                   </div>

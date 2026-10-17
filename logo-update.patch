@@ -1,0 +1,220 @@
+diff --git a/server/app.ts b/server/app.ts
+index 65e9cdf..a5d78dd 100644
+--- a/server/app.ts
++++ b/server/app.ts
+@@ -136,6 +136,8 @@ app.get('/api/public/settings', h(async (_req, res) => {
+     logo_url: s.logo_url,
+     logo1_url: s.logo1_url || s.logo_url,
+     logo2_url: s.logo2_url || '',
++    logo3_url: s.logo3_url || '',
++    logo4_url: s.logo4_url || '',
+     durasi_menit: s.durasi_menit,
+     background_url: s.background_url,
+     status_lomba: s.status_lomba,
+diff --git a/server/db.ts b/server/db.ts
+index 6ae19bf..1ac3cd5 100644
+--- a/server/db.ts
++++ b/server/db.ts
+@@ -28,6 +28,8 @@ const DEFAULT_SETTINGS: CompetitionSettings = {
+   logo_url: '',
+   logo1_url: '',
+   logo2_url: '',
++  logo3_url: '',
++  logo4_url: '',
+   background_url: '',
+   status_lomba: 'berlangsung',
+   mode_hasil_akhir: false,
+diff --git a/src/components/admin/AdminSettings.tsx b/src/components/admin/AdminSettings.tsx
+index aaac5fc..776f09e 100644
+--- a/src/components/admin/AdminSettings.tsx
++++ b/src/components/admin/AdminSettings.tsx
+@@ -367,7 +367,7 @@ export const AdminSettings: React.FC = () => {
+ 
+                 <div className="grid grid-cols-2 gap-3">
+                   <div>
+-                    <label className="block font-bold text-slate-700 mb-1">URL Logo 1 (Penyelenggara)</label>
++                    <label className="block font-bold text-slate-700 mb-1">URL Logo 1 (pojok kiri atas)</label>
+                     <input
+                       type="text"
+                       value={settings.logo1_url || ''}
+@@ -377,7 +377,7 @@ export const AdminSettings: React.FC = () => {
+                     />
+                   </div>
+                   <div>
+-                    <label className="block font-bold text-slate-700 mb-1">URL Logo 2 (Logo Event)</label>
++                    <label className="block font-bold text-slate-700 mb-1">URL Logo 2 (pojok kiri atas)</label>
+                     <input
+                       type="text"
+                       value={settings.logo2_url || ''}
+@@ -387,6 +387,29 @@ export const AdminSettings: React.FC = () => {
+                     />
+                   </div>
+                 </div>
++
++                <div className="grid grid-cols-2 gap-3">
++                  <div>
++                    <label className="block font-bold text-slate-700 mb-1">URL Logo 3 (tengah halaman login)</label>
++                    <input
++                      type="text"
++                      value={settings.logo3_url || ''}
++                      onChange={(e) => setSettings({ ...settings, logo3_url: e.target.value })}
++                      placeholder="/logo3.png"
++                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
++                    />
++                  </div>
++                  <div>
++                    <label className="block font-bold text-slate-700 mb-1">URL Logo 4 (tengah halaman login)</label>
++                    <input
++                      type="text"
++                      value={settings.logo4_url || ''}
++                      onChange={(e) => setSettings({ ...settings, logo4_url: e.target.value })}
++                      placeholder="/logo4.png"
++                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
++                    />
++                  </div>
++                </div>
+               </div>
+             </div>
+ 
+diff --git a/src/components/auth/LoginView.tsx b/src/components/auth/LoginView.tsx
+index c7d9fc0..2b79122 100644
+--- a/src/components/auth/LoginView.tsx
++++ b/src/components/auth/LoginView.tsx
+@@ -1,6 +1,5 @@
+ import React, { useState, useEffect } from 'react';
+ import {
+-  Award,
+   User,
+   Shield,
+   ArrowRight,
+@@ -37,8 +36,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
+ 
+   const judul1 = settings?.judul1 || 'SELEKSI SISWA BERPRESTASI TINGKAT DASAR';
+   const judul2 = settings?.judul2 || 'SISPRES — SISTEM LOMBA SISWA PRESTASI 2026';
+-  const logo1Url = settings?.logo1_url;
+-  const logo2Url = settings?.logo2_url;
++  const logo3Url = settings?.logo3_url;
++  const logo4Url = settings?.logo4_url;
+ 
+   // Load registered participants
+   useEffect(() => {
+@@ -105,48 +104,25 @@ export const LoginView: React.FC<LoginViewProps> = ({
+ 
+       {/* MAIN CARD HEADER: DUAL LOGO + DUAL TITLES (FULL COLOR) */}
+       <div className="sm:mx-auto sm:w-full sm:max-w-lg text-center mb-4">
+-        {/* Dual Logos (Logo 1 & Logo 2) */}
+-        <div className="flex items-center justify-center gap-3 mb-3">
+-          {/* Logo 1 */}
+-          <div className="flex flex-col items-center">
+-            {logo1Url ? (
++        {/* Logo 3 & Logo 4 (besar, tanpa kotak; cocok untuk PNG transparan) */}
++        {(logo3Url || logo4Url) && (
++          <div className="flex items-center justify-center gap-6 sm:gap-10 mb-4">
++            {logo3Url && (
+               <img
+-                src={logo1Url}
+-                alt="Logo 1"
+-                className="w-14 h-14 object-contain rounded-2xl p-1 bg-white/20 backdrop-blur-md border-2 border-amber-400 shadow-xl"
++                src={logo3Url}
++                alt="Logo 3"
++                className="h-24 sm:h-32 w-auto max-w-[44%] object-contain drop-shadow-lg"
+               />
+-            ) : (
+-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 text-slate-950 flex items-center justify-center font-black shadow-xl shadow-amber-500/30 border-2 border-white ring-4 ring-amber-400/30">
+-                <span className="text-xl">🏛️</span>
+-              </div>
+             )}
+-            <span className="mt-1 text-[9px] font-black uppercase text-amber-300 tracking-wider">
+-              Logo 1
+-            </span>
+-          </div>
+-
+-          <div className="text-amber-400 font-black text-lg animate-pulse">
+-            ✕
+-          </div>
+-
+-          {/* Logo 2 */}
+-          <div className="flex flex-col items-center">
+-            {logo2Url ? (
++            {logo4Url && (
+               <img
+-                src={logo2Url}
+-                alt="Logo 2"
+-                className="w-14 h-14 object-contain rounded-2xl p-1 bg-white/20 backdrop-blur-md border-2 border-emerald-400 shadow-xl"
++                src={logo4Url}
++                alt="Logo 4"
++                className="h-24 sm:h-32 w-auto max-w-[44%] object-contain drop-shadow-lg"
+               />
+-            ) : (
+-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 text-white flex items-center justify-center font-black shadow-xl shadow-emerald-500/30 border-2 border-white ring-4 ring-emerald-400/30">
+-                <Award className="w-7 h-7 text-amber-300 drop-shadow-md" />
+-              </div>
+             )}
+-            <span className="mt-1 text-[9px] font-black uppercase text-emerald-300 tracking-wider">
+-              Logo 2
+-            </span>
+           </div>
+-        </div>
++        )}
+ 
+         {/* Dual Titles: Judul 1 & Judul 2 */}
+         <div className="inline-block px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-400/20 via-emerald-400/20 to-teal-400/20 border border-amber-300/40 text-amber-300 text-[11px] sm:text-xs font-black uppercase tracking-widest mb-1.5 shadow-sm">
+diff --git a/src/components/common/Navbar.tsx b/src/components/common/Navbar.tsx
+index 46c0616..26502db 100644
+--- a/src/components/common/Navbar.tsx
++++ b/src/components/common/Navbar.tsx
+@@ -41,16 +41,18 @@ export const Navbar: React.FC<NavbarProps> = ({
+               <img
+                 src={logo1Url}
+                 alt="Logo 1"
+-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-xl p-1 bg-white/10 backdrop-blur border border-amber-300/60 shadow-md group-hover:scale-105 transition-transform"
++                className="h-10 sm:h-12 w-auto max-w-[80px] object-contain group-hover:scale-105 transition-transform"
+               />
+             ) : (
+               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/20 border-2 border-white/40 group-hover:scale-105 transition-transform">
+                 <span className="text-lg sm:text-xl">🏛️</span>
+               </div>
+             )}
+-            <span className="absolute -bottom-1 -right-1 text-[8px] font-black bg-amber-400 text-slate-950 px-1 py-0.2 rounded-full border border-slate-900 font-mono">
++            {!logo1Url && (
++              <span className="absolute -bottom-1 -right-1 text-[8px] font-black bg-amber-400 text-slate-950 px-1 py-0.2 rounded-full border border-slate-900 font-mono">
+               L1
+             </span>
++            )}
+           </div>
+ 
+           {/* Logo 2 (Logo Lomba / SISPRES) */}
+@@ -59,16 +61,18 @@ export const Navbar: React.FC<NavbarProps> = ({
+               <img
+                 src={logo2Url}
+                 alt="Logo 2"
+-                className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-xl p-1 bg-white/10 backdrop-blur border border-emerald-300/60 shadow-md group-hover:scale-105 transition-transform"
++                className="h-10 sm:h-12 w-auto max-w-[80px] object-contain group-hover:scale-105 transition-transform"
+               />
+             ) : (
+               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white flex items-center justify-center font-black shadow-lg shadow-emerald-500/20 border-2 border-emerald-300/50 group-hover:scale-105 transition-transform">
+                 <Award className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300 drop-shadow-md" />
+               </div>
+             )}
+-            <span className="absolute -bottom-1 -right-1 text-[8px] font-black bg-emerald-400 text-slate-950 px-1 py-0.2 rounded-full border border-slate-900 font-mono">
++            {!logo2Url && (
++              <span className="absolute -bottom-1 -right-1 text-[8px] font-black bg-emerald-400 text-slate-950 px-1 py-0.2 rounded-full border border-slate-900 font-mono">
+               L2
+             </span>
++            )}
+           </div>
+ 
+           {/* Dual Titles: Judul 1 & Judul 2 */}
+diff --git a/src/types/index.ts b/src/types/index.ts
+index 7563f0b..e8d93c2 100644
+--- a/src/types/index.ts
++++ b/src/types/index.ts
+@@ -76,6 +76,8 @@ export interface CompetitionSettings {
+   logo_url: string;
+   logo1_url: string;
+   logo2_url: string;
++  logo3_url?: string;
++  logo4_url?: string;
+   background_url?: string;
+   status_lomba: 'belum_mulai' | 'berlangsung' | 'selesai';
+   mode_hasil_akhir: boolean;

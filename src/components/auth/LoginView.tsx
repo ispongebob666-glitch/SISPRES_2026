@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Award,
   User,
   Shield,
   ArrowRight,
@@ -37,8 +36,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
   const judul1 = settings?.judul1 || 'SELEKSI SISWA BERPRESTASI TINGKAT DASAR';
   const judul2 = settings?.judul2 || 'SISPRES — SISTEM LOMBA SISWA PRESTASI 2026';
-  const logo1Url = settings?.logo1_url;
-  const logo2Url = settings?.logo2_url;
+  const logo3Url = settings?.logo3_url;
+  const logo4Url = settings?.logo4_url;
 
   // Load registered participants
   useEffect(() => {
@@ -105,48 +104,25 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
       {/* MAIN CARD HEADER: DUAL LOGO + DUAL TITLES (FULL COLOR) */}
       <div className="sm:mx-auto sm:w-full sm:max-w-lg text-center mb-4">
-        {/* Dual Logos (Logo 1 & Logo 2) */}
-        <div className="flex items-center justify-center gap-3 mb-3">
-          {/* Logo 1 */}
-          <div className="flex flex-col items-center">
-            {logo1Url ? (
+        {/* Logo 3 & Logo 4 (besar, tanpa kotak; cocok untuk PNG transparan) */}
+        {(logo3Url || logo4Url) && (
+          <div className="flex items-center justify-center gap-6 sm:gap-10 mb-4">
+            {logo3Url && (
               <img
-                src={logo1Url}
-                alt="Logo 1"
-                className="w-14 h-14 object-contain rounded-2xl p-1 bg-white/20 backdrop-blur-md border-2 border-amber-400 shadow-xl"
+                src={logo3Url}
+                alt="Logo 3"
+                className="h-24 sm:h-32 w-auto max-w-[44%] object-contain drop-shadow-lg"
               />
-            ) : (
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 text-slate-950 flex items-center justify-center font-black shadow-xl shadow-amber-500/30 border-2 border-white ring-4 ring-amber-400/30">
-                <span className="text-xl">🏛️</span>
-              </div>
             )}
-            <span className="mt-1 text-[9px] font-black uppercase text-amber-300 tracking-wider">
-              Logo 1
-            </span>
-          </div>
-
-          <div className="text-amber-400 font-black text-lg animate-pulse">
-            ✕
-          </div>
-
-          {/* Logo 2 */}
-          <div className="flex flex-col items-center">
-            {logo2Url ? (
+            {logo4Url && (
               <img
-                src={logo2Url}
-                alt="Logo 2"
-                className="w-14 h-14 object-contain rounded-2xl p-1 bg-white/20 backdrop-blur-md border-2 border-emerald-400 shadow-xl"
+                src={logo4Url}
+                alt="Logo 4"
+                className="h-24 sm:h-32 w-auto max-w-[44%] object-contain drop-shadow-lg"
               />
-            ) : (
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 text-white flex items-center justify-center font-black shadow-xl shadow-emerald-500/30 border-2 border-white ring-4 ring-emerald-400/30">
-                <Award className="w-7 h-7 text-amber-300 drop-shadow-md" />
-              </div>
             )}
-            <span className="mt-1 text-[9px] font-black uppercase text-emerald-300 tracking-wider">
-              Logo 2
-            </span>
           </div>
-        </div>
+        )}
 
         {/* Dual Titles: Judul 1 & Judul 2 */}
         <div className="inline-block px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-400/20 via-emerald-400/20 to-teal-400/20 border border-amber-300/40 text-amber-300 text-[11px] sm:text-xs font-black uppercase tracking-widest mb-1.5 shadow-sm">
@@ -334,24 +310,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
               </form>
             )}
           </div>
-        </div>
-
-        {/* Quick Demo Shortcuts */}
-        <div className="mt-4 text-center text-xs text-emerald-200/90 flex flex-wrap items-center justify-center gap-2">
-          <span className="font-bold text-amber-300">Pilih Cepat:</span>
-          {participants.slice(0, 3).map(p => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => {
-                setRoleTab('PESERTA');
-                setSelectedParticipantId(p.id);
-              }}
-              className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-[11px] transition-all cursor-pointer"
-            >
-              {p.nama} ({p.gender})
-            </button>
-          ))}
         </div>
       </div>
     </div>

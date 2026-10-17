@@ -28,6 +28,8 @@ const DEFAULT_SETTINGS: CompetitionSettings = {
   logo_url: '',
   logo1_url: '',
   logo2_url: '',
+  logo3_url: '',
+  logo4_url: '',
   background_url: '',
   status_lomba: 'berlangsung',
   mode_hasil_akhir: false,

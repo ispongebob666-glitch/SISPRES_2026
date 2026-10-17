@@ -136,6 +136,8 @@ app.get('/api/public/settings', h(async (_req, res) => {
     logo_url: s.logo_url,
     logo1_url: s.logo1_url || s.logo_url,
     logo2_url: s.logo2_url || '',
+    logo3_url: s.logo3_url || '',
+    logo4_url: s.logo4_url || '',
     durasi_menit: s.durasi_menit,
     background_url: s.background_url,
     status_lomba: s.status_lomba,

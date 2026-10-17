@@ -76,6 +76,8 @@ export interface CompetitionSettings {
   logo_url: string;
   logo1_url: string;
   logo2_url: string;
+  logo3_url?: string;
+  logo4_url?: string;
   background_url?: string;
   status_lomba: 'belum_mulai' | 'berlangsung' | 'selesai';
   mode_hasil_akhir: boolean;

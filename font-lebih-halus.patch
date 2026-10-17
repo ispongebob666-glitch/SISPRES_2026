@@ -1,0 +1,37 @@
+diff --git a/index.html b/index.html
+index b3a7b0b..56c5f0b 100644
+--- a/index.html
++++ b/index.html
+@@ -11,7 +11,7 @@
+     <meta name="twitter:card" content="summary_large_image" />
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
++    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+   </head>
+   <body>
+     <div id="root"></div>
+diff --git a/src/index.css b/src/index.css
+index f1d8c73..e5ccf3f 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -1 +1,19 @@
+ @import "tailwindcss";
++
++@theme {
++  /* Font yang benar-benar dipakai (sebelumnya dimuat tapi tidak pernah diterapkan) */
++  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
++  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
++
++  /* Semua tebal teks diturunkan satu tingkat, dan hanya memakai bobot yang
++     memang dimuat dari Google Fonts (400-800). Tidak ada lagi bobot 900. */
++  --font-weight-bold: 600;
++  --font-weight-extrabold: 700;
++  --font-weight-black: 800;
++}
++
++html {
++  text-rendering: optimizeLegibility;
++  -webkit-font-smoothing: antialiased;
++  -moz-osx-font-smoothing: grayscale;
++}
