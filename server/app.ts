@@ -321,6 +321,11 @@ app.put('/api/admin/participants/:id', checkAdmin, h(async (req, res) => {
   res.json(updated);
 }));
 
+app.delete('/api/admin/participants', checkAdmin, h(async (_req, res) => {
+  const deleted = await db.deleteAllParticipants();
+  res.json({ success: true, deleted });
+}));
+
 app.delete('/api/admin/participants/:id', checkAdmin, h(async (req, res) => {
   const ok = await db.deleteParticipant(req.params.id as string);
   if (!ok) return res.status(404).json({ error: 'Peserta gagal dihapus.' });
@@ -370,6 +375,11 @@ app.put('/api/admin/questions/:id', checkAdmin, h(async (req, res) => {
   const updated = await db.updateQuestion(req.params.id as string, req.body);
   if (!updated) return res.status(404).json({ error: 'Soal tidak ditemukan.' });
   res.json(updated);
+}));
+
+app.delete('/api/admin/questions', checkAdmin, h(async (_req, res) => {
+  const deleted = await db.deleteAllQuestions();
+  res.json({ success: true, deleted });
 }));
 
 app.delete('/api/admin/questions/:id', checkAdmin, h(async (req, res) => {

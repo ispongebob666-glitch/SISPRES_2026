@@ -193,6 +193,14 @@ export const api = {
     return parseJson(res);
   },
 
+  async deleteAllParticipants() {
+    const res = await fetch(`${API_BASE}/admin/participants`, {
+      method: 'DELETE',
+      headers: adminHeaders(),
+    });
+    return parseJson(res);
+  },
+
   async resetParticipant(id: string) {
     const res = await fetch(`${API_BASE}/admin/participants/reset/${id}`, {
       method: 'POST',
@@ -235,6 +243,14 @@ export const api = {
       body: JSON.stringify(q),
     });
     return res.json();
+  },
+
+  async deleteAllQuestions() {
+    const res = await fetch(`${API_BASE}/admin/questions`, {
+      method: 'DELETE',
+      headers: adminHeaders(),
+    });
+    return parseJson(res);
   },
 
   async deleteQuestion(id: string) {

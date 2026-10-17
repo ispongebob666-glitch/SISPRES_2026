@@ -184,6 +184,14 @@ class Database {
     return (rows?.length || 0) > 0;
   }
 
+  // Hapus SEMUA peserta beserta hasil ujiannya. Mengembalikan jumlah peserta yang dihapus.
+  async deleteAllParticipants(): Promise<number> {
+    const rows = check(await client().from('participants').select('id'), 'participants.count') || [];
+    check(await client().from('exams').delete().neq('participant_id', '__none__'), 'exams.deleteAll');
+    check(await client().from('participants').delete().neq('id', '__none__'), 'participants.deleteAll');
+    return rows.length;
+  }
+
   async resetParticipant(id: string): Promise<boolean> {
     const participant = await this.getParticipant(id);
     if (!participant) return false;
@@ -217,6 +225,13 @@ class Database {
       'questions.update'
     );
     return row ? mapQuestion(row) : undefined;
+  }
+
+  // Hapus SEMUA soal. Mengembalikan jumlah soal yang dihapus.
+  async deleteAllQuestions(): Promise<number> {
+    const rows = check(await client().from('questions').select('id'), 'questions.count') || [];
+    check(await client().from('questions').delete().neq('id', '__none__'), 'questions.deleteAll');
+    return rows.length;
   }
 
   async deleteQuestion(id: string): Promise<boolean> {

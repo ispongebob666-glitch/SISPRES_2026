@@ -1,0 +1,185 @@
+diff --git a/server/app.ts b/server/app.ts
+index a5d78dd..ee8b6ed 100644
+--- a/server/app.ts
++++ b/server/app.ts
+@@ -321,6 +321,11 @@ app.put('/api/admin/participants/:id', checkAdmin, h(async (req, res) => {
+   res.json(updated);
+ }));
+ 
++app.delete('/api/admin/participants', checkAdmin, h(async (_req, res) => {
++  const deleted = await db.deleteAllParticipants();
++  res.json({ success: true, deleted });
++}));
++
+ app.delete('/api/admin/participants/:id', checkAdmin, h(async (req, res) => {
+   const ok = await db.deleteParticipant(req.params.id as string);
+   if (!ok) return res.status(404).json({ error: 'Peserta gagal dihapus.' });
+@@ -372,6 +377,11 @@ app.put('/api/admin/questions/:id', checkAdmin, h(async (req, res) => {
+   res.json(updated);
+ }));
+ 
++app.delete('/api/admin/questions', checkAdmin, h(async (_req, res) => {
++  const deleted = await db.deleteAllQuestions();
++  res.json({ success: true, deleted });
++}));
++
+ app.delete('/api/admin/questions/:id', checkAdmin, h(async (req, res) => {
+   const ok = await db.deleteQuestion(req.params.id as string);
+   if (!ok) return res.status(404).json({ error: 'Gagal menghapus soal.' });
+diff --git a/server/db.ts b/server/db.ts
+index 1ac3cd5..2ef4356 100644
+--- a/server/db.ts
++++ b/server/db.ts
+@@ -184,6 +184,14 @@ class Database {
+     return (rows?.length || 0) > 0;
+   }
+ 
++  // Hapus SEMUA peserta beserta hasil ujiannya. Mengembalikan jumlah peserta yang dihapus.
++  async deleteAllParticipants(): Promise<number> {
++    const rows = check(await client().from('participants').select('id'), 'participants.count') || [];
++    check(await client().from('exams').delete().neq('participant_id', '__none__'), 'exams.deleteAll');
++    check(await client().from('participants').delete().neq('id', '__none__'), 'participants.deleteAll');
++    return rows.length;
++  }
++
+   async resetParticipant(id: string): Promise<boolean> {
+     const participant = await this.getParticipant(id);
+     if (!participant) return false;
+@@ -219,6 +227,13 @@ class Database {
+     return row ? mapQuestion(row) : undefined;
+   }
+ 
++  // Hapus SEMUA soal. Mengembalikan jumlah soal yang dihapus.
++  async deleteAllQuestions(): Promise<number> {
++    const rows = check(await client().from('questions').select('id'), 'questions.count') || [];
++    check(await client().from('questions').delete().neq('id', '__none__'), 'questions.deleteAll');
++    return rows.length;
++  }
++
+   async deleteQuestion(id: string): Promise<boolean> {
+     const rows = check(await client().from('questions').delete().eq('id', id).select('id'), 'questions.delete');
+     return (rows?.length || 0) > 0;
+diff --git a/src/components/admin/AdminParticipants.tsx b/src/components/admin/AdminParticipants.tsx
+index 9d66d64..2243995 100644
+--- a/src/components/admin/AdminParticipants.tsx
++++ b/src/components/admin/AdminParticipants.tsx
+@@ -150,6 +150,23 @@ export const AdminParticipants: React.FC = () => {
+     });
+   };
+ 
++  const confirmDeleteAll = () => {
++    setConfirmModal({
++      open: true,
++      title: 'Hapus SEMUA Peserta',
++      message: `Yakin ingin menghapus SEMUA ${participants.length} peserta beserta hasil ujiannya? Data tidak dapat dikembalikan. Disarankan unduh Backup terlebih dahulu.`,
++      action: async () => {
++        try {
++          await api.deleteAllParticipants();
++        } catch (err: any) {
++          alert(`Gagal menghapus: ${err.message}`);
++        }
++        setConfirmModal(prev => ({ ...prev, open: false }));
++        await loadData();
++      },
++    });
++  };
++
+   // Export to CSV
+   const handleExportCsv = () => {
+     const headers = ['ID Peserta', 'Nama Peserta', 'Kategori', 'Password', 'Status'];
+@@ -276,6 +293,16 @@ export const AdminParticipants: React.FC = () => {
+             <Download className="w-4 h-4" />
+             <span>Export CSV</span>
+           </button>
++
++          <button
++            type="button"
++            onClick={confirmDeleteAll}
++            disabled={participants.length === 0}
++            className="px-3 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
++          >
++            <Trash2 className="w-4 h-4" />
++            <span>Hapus Semua</span>
++          </button>
+         </div>
+       </div>
+ 
+diff --git a/src/components/admin/AdminQuestions.tsx b/src/components/admin/AdminQuestions.tsx
+index ea6ce05..04cedc7 100644
+--- a/src/components/admin/AdminQuestions.tsx
++++ b/src/components/admin/AdminQuestions.tsx
+@@ -268,6 +268,23 @@ export const AdminQuestions: React.FC = () => {
+     });
+   };
+ 
++  const confirmDeleteAll = () => {
++    setConfirmModal({
++      open: true,
++      title: 'Hapus SEMUA Soal',
++      message: `Yakin ingin menghapus SEMUA ${questions.length} soal? Data tidak dapat dikembalikan. Disarankan unduh Backup atau Export Bank Soal terlebih dahulu.`,
++      action: async () => {
++        try {
++          await api.deleteAllQuestions();
++        } catch (err: any) {
++          alert(`Gagal menghapus: ${err.message}`);
++        }
++        setConfirmModal(prev => ({ ...prev, open: false }));
++        await loadQuestions();
++      },
++    });
++  };
++
+   // Export CSV
+   const handleExportCsv = () => {
+     const headers = ['No Urut', 'Tipe', 'Soal', 'Opsi A', 'Opsi B', 'Opsi C', 'Opsi D', 'Kunci', 'Bobot', 'Pembahasan', 'Status'];
+@@ -360,6 +377,16 @@ export const AdminQuestions: React.FC = () => {
+             <Download className="w-4 h-4" />
+             <span>Export Bank Soal</span>
+           </button>
++
++          <button
++            type="button"
++            onClick={confirmDeleteAll}
++            disabled={questions.length === 0}
++            className="px-3 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
++          >
++            <Trash2 className="w-4 h-4" />
++            <span>Hapus Semua</span>
++          </button>
+         </div>
+       </div>
+ 
+diff --git a/src/services/api.ts b/src/services/api.ts
+index db5be0d..055086d 100644
+--- a/src/services/api.ts
++++ b/src/services/api.ts
+@@ -193,6 +193,14 @@ export const api = {
+     return parseJson(res);
+   },
+ 
++  async deleteAllParticipants() {
++    const res = await fetch(`${API_BASE}/admin/participants`, {
++      method: 'DELETE',
++      headers: adminHeaders(),
++    });
++    return parseJson(res);
++  },
++
+   async resetParticipant(id: string) {
+     const res = await fetch(`${API_BASE}/admin/participants/reset/${id}`, {
+       method: 'POST',
+@@ -237,6 +245,14 @@ export const api = {
+     return res.json();
+   },
+ 
++  async deleteAllQuestions() {
++    const res = await fetch(`${API_BASE}/admin/questions`, {
++      method: 'DELETE',
++      headers: adminHeaders(),
++    });
++    return parseJson(res);
++  },
++
+   async deleteQuestion(id: string) {
+     const res = await fetch(`${API_BASE}/admin/questions/${id}`, {
+       method: 'DELETE',

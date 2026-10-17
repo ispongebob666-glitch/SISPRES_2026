@@ -150,6 +150,23 @@ export const AdminParticipants: React.FC = () => {
     });
   };
 
+  const confirmDeleteAll = () => {
+    setConfirmModal({
+      open: true,
+      title: 'Hapus SEMUA Peserta',
+      message: `Yakin ingin menghapus SEMUA ${participants.length} peserta beserta hasil ujiannya? Data tidak dapat dikembalikan. Disarankan unduh Backup terlebih dahulu.`,
+      action: async () => {
+        try {
+          await api.deleteAllParticipants();
+        } catch (err: any) {
+          alert(`Gagal menghapus: ${err.message}`);
+        }
+        setConfirmModal(prev => ({ ...prev, open: false }));
+        await loadData();
+      },
+    });
+  };
+
   // Export to CSV
   const handleExportCsv = () => {
     const headers = ['ID Peserta', 'Nama Peserta', 'Kategori', 'Password', 'Status'];
@@ -275,6 +292,16 @@ export const AdminParticipants: React.FC = () => {
           >
             <Download className="w-4 h-4" />
             <span>Export CSV</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={confirmDeleteAll}
+            disabled={participants.length === 0}
+            className="px-3 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Hapus Semua</span>
           </button>
         </div>
       </div>
