@@ -1,0 +1,6 @@
+{
+  "name": "SISPRES - Sistem Lomba Siswa Prestasi",
+  "description": "Aplikasi lomba siswa prestasi satu kali event dengan peran Admin, Peserta (Putra & Putri per sekolah), dan Live Score interaktif real-time 10 detik.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
