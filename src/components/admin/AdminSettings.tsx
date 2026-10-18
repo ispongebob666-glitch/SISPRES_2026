@@ -464,6 +464,72 @@ export const AdminSettings: React.FC = () => {
           </div>
         </div>
 
+        {/* Tanda tangan laporan nilai */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+          <h3 className="font-extrabold text-sm text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+            <Settings className="w-4 h-4 text-emerald-600" />
+            <span>Tanda Tangan Laporan Nilai (Export PDF)</span>
+          </h3>
+
+          <div className="space-y-3 text-xs">
+            <p className="text-slate-500 font-semibold">
+              Dipakai pada bagian bawah laporan nilai. Tanggal diisi manual, contoh: Rejoso, 18 Oktober 2026.
+            </p>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Tempat &amp; Tanggal</label>
+                  <input
+                    type="text"
+                    value={settings.tempat_tanggal || ''}
+                    onChange={(e) => setSettings({ ...settings, tempat_tanggal: e.target.value })}
+                    placeholder="Rejoso, 18 Oktober 2026"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                  />
+                </div>
+            <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Nama Ketua Panitia</label>
+                  <input
+                    type="text"
+                    value={settings.ketua_nama || ''}
+                    onChange={(e) => setSettings({ ...settings, ketua_nama: e.target.value })}
+                    placeholder="Nama lengkap beserta gelar"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">NIP Ketua Panitia</label>
+                  <input
+                    type="text"
+                    value={settings.ketua_nip || ''}
+                    onChange={(e) => setSettings({ ...settings, ketua_nip: e.target.value })}
+                    placeholder="19xxxxxx xxxxxx x xxx"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Nama Korwil Kecamatan Rejoso</label>
+                  <input
+                    type="text"
+                    value={settings.korwil_nama || ''}
+                    onChange={(e) => setSettings({ ...settings, korwil_nama: e.target.value })}
+                    placeholder="Nama lengkap beserta gelar"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">NIP Korwil Kecamatan Rejoso</label>
+                  <input
+                    type="text"
+                    value={settings.korwil_nip || ''}
+                    onChange={(e) => setSettings({ ...settings, korwil_nip: e.target.value })}
+                    placeholder="19xxxxxx xxxxxx x xxx"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
+                  />
+                </div>
+            </div>
+          </div>
+        </div>
+
         {/* Keamanan & Live Score Configuration */}
         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
           <h3 className="font-extrabold text-sm text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">

@@ -4,6 +4,7 @@ import {
   Search,
   Filter,
   Download,
+  FileText,
   Printer,
   Eye,
   CheckCircle2,
@@ -14,6 +15,7 @@ import {
   FileCheck,
 } from 'lucide-react';
 import { api } from '../../services/api.ts';
+import { exportNilaiPdf } from '../../utils/exportNilaiPdf.ts';
 
 export const AdminResults: React.FC = () => {
   const [results, setResults] = useState<any[]>([]);
@@ -137,6 +139,14 @@ export const AdminResults: React.FC = () => {
           >
             <Download className="w-4 h-4 text-emerald-700" />
             <span>Export CSV</span>
+          </button>
+          <button
+            type="button"
+            onClick={exportNilaiPdf}
+            className="px-3.5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <FileText className="w-4 h-4" />
+            <span>Export PDF</span>
           </button>
 
           <button

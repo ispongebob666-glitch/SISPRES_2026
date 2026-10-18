@@ -78,6 +78,12 @@ export interface CompetitionSettings {
   logo2_url: string;
   logo3_url?: string;
   logo4_url?: string;
+  // Data tanda tangan laporan nilai (diisi manual di Pengaturan)
+  ketua_nama?: string;
+  ketua_nip?: string;
+  korwil_nama?: string;
+  korwil_nip?: string;
+  tempat_tanggal?: string;
   background_url?: string;
   status_lomba: 'belum_mulai' | 'berlangsung' | 'selesai';
   mode_hasil_akhir: boolean;

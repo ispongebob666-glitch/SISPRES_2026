@@ -520,7 +520,7 @@ export const ExamView: React.FC<ExamViewProps> = ({ participant, onFinish, onLog
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* QUESTION NUMBERS GRID (Clean multi-row layout without nested scroll per #10) */}
         <div className="lg:col-span-4 order-2 lg:order-1">
-          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-sm sticky top-24">
+          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/90 shadow-sm sticky top-24">
             <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
               <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
                 <FileText className="w-4 h-4 text-emerald-600" />
@@ -530,7 +530,7 @@ export const ExamView: React.FC<ExamViewProps> = ({ participant, onFinish, onLog
             </div>
 
             {/* Grid of buttons without internal scroll container */}
-            <div className="grid grid-cols-5 sm:grid-cols-5 gap-2 pt-1">
+            <div className="grid grid-cols-10 gap-1 pt-1">
               {questions.map((q, idx) => {
                 const isAnswered = answers[q.id] !== undefined && answers[q.id] !== null && answers[q.id] !== '' && (Array.isArray(answers[q.id]) ? answers[q.id].length > 0 : true);
                 const isActive = idx === currentIndex;
@@ -540,25 +540,22 @@ export const ExamView: React.FC<ExamViewProps> = ({ participant, onFinish, onLog
                     key={q.id}
                     type="button"
                     onClick={() => setCurrentIndex(idx)}
-                    className={`h-11 rounded-xl text-xs font-extrabold flex flex-col items-center justify-center transition-all cursor-pointer relative ${
+                    className={`aspect-square min-w-0 rounded-md text-[11px] font-bold leading-none flex items-center justify-center transition-all cursor-pointer ${
                       isActive
-                        ? 'ring-2 ring-amber-500 ring-offset-2 bg-emerald-800 text-white shadow-md'
+                        ? 'ring-2 ring-amber-500 ring-offset-1 bg-emerald-800 text-white shadow-md'
                         : isAnswered
-                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs'
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
                     }`}
                   >
-                    <span>{idx + 1}</span>
-                    {isAnswered && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-300 mt-0.5" />
-                    )}
+                    {idx + 1}
                   </button>
                 );
               })}
             </div>
 
             {/* Legend */}
-            <div className="mt-5 pt-3 border-t border-slate-100 grid grid-cols-3 gap-1 text-[10px] text-slate-600 font-semibold text-center">
+            <div className="mt-3 pt-2 border-t border-slate-100 grid grid-cols-3 gap-1 text-[10px] text-slate-600 font-semibold text-center">
               <div className="flex items-center justify-center gap-1">
                 <span className="w-2.5 h-2.5 rounded bg-emerald-600 inline-block" />
                 <span>Terjawab</span>

@@ -1,0 +1,532 @@
+diff --git a/server/db.ts b/server/db.ts
+index 2ef4356..737a89a 100644
+--- a/server/db.ts
++++ b/server/db.ts
+@@ -30,6 +30,11 @@ const DEFAULT_SETTINGS: CompetitionSettings = {
+   logo2_url: '',
+   logo3_url: '',
+   logo4_url: '',
++  ketua_nama: '',
++  ketua_nip: '',
++  korwil_nama: '',
++  korwil_nip: '',
++  tempat_tanggal: '',
+   background_url: '',
+   status_lomba: 'berlangsung',
+   mode_hasil_akhir: false,
+diff --git a/src/components/admin/AdminRankings.tsx b/src/components/admin/AdminRankings.tsx
+index 765b8d9..af3c023 100644
+--- a/src/components/admin/AdminRankings.tsx
++++ b/src/components/admin/AdminRankings.tsx
+@@ -4,11 +4,13 @@ import {
+   Medal,
+   Clock,
+   Download,
++  FileText,
+   Printer,
+   RefreshCw,
+   Sparkles,
+ } from 'lucide-react';
+ import { api } from '../../services/api.ts';
++import { exportNilaiPdf } from '../../utils/exportNilaiPdf.ts';
+ import type { LiveScoreBoard, LiveScoreItem } from '../../types/index.ts';
+ 
+ export const AdminRankings: React.FC = () => {
+@@ -87,6 +89,14 @@ export const AdminRankings: React.FC = () => {
+             <Download className="w-4 h-4 text-emerald-700" />
+             <span>Export CSV</span>
+           </button>
++          <button
++            type="button"
++            onClick={exportNilaiPdf}
++            className="px-3.5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
++          >
++            <FileText className="w-4 h-4" />
++            <span>Export PDF</span>
++          </button>
+           <button
+             type="button"
+             onClick={() => window.print()}
+diff --git a/src/components/admin/AdminResults.tsx b/src/components/admin/AdminResults.tsx
+index 5257899..33138af 100644
+--- a/src/components/admin/AdminResults.tsx
++++ b/src/components/admin/AdminResults.tsx
+@@ -4,6 +4,7 @@ import {
+   Search,
+   Filter,
+   Download,
++  FileText,
+   Printer,
+   Eye,
+   CheckCircle2,
+@@ -14,6 +15,7 @@ import {
+   FileCheck,
+ } from 'lucide-react';
+ import { api } from '../../services/api.ts';
++import { exportNilaiPdf } from '../../utils/exportNilaiPdf.ts';
+ 
+ export const AdminResults: React.FC = () => {
+   const [results, setResults] = useState<any[]>([]);
+@@ -138,6 +140,14 @@ export const AdminResults: React.FC = () => {
+             <Download className="w-4 h-4 text-emerald-700" />
+             <span>Export CSV</span>
+           </button>
++          <button
++            type="button"
++            onClick={exportNilaiPdf}
++            className="px-3.5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
++          >
++            <FileText className="w-4 h-4" />
++            <span>Export PDF</span>
++          </button>
+ 
+           <button
+             type="button"
+diff --git a/src/components/admin/AdminSettings.tsx b/src/components/admin/AdminSettings.tsx
+index 776f09e..b272f0c 100644
+--- a/src/components/admin/AdminSettings.tsx
++++ b/src/components/admin/AdminSettings.tsx
+@@ -464,6 +464,72 @@ export const AdminSettings: React.FC = () => {
+           </div>
+         </div>
+ 
++        {/* Tanda tangan laporan nilai */}
++        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
++          <h3 className="font-extrabold text-sm text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
++            <Settings className="w-4 h-4 text-emerald-600" />
++            <span>Tanda Tangan Laporan Nilai (Export PDF)</span>
++          </h3>
++
++          <div className="space-y-3 text-xs">
++            <p className="text-slate-500 font-semibold">
++              Dipakai pada bagian bawah laporan nilai. Tanggal diisi manual, contoh: Rejoso, 18 Oktober 2026.
++            </p>
++                <div>
++                  <label className="block font-bold text-slate-700 mb-1">Tempat &amp; Tanggal</label>
++                  <input
++                    type="text"
++                    value={settings.tempat_tanggal || ''}
++                    onChange={(e) => setSettings({ ...settings, tempat_tanggal: e.target.value })}
++                    placeholder="Rejoso, 18 Oktober 2026"
++                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
++                  />
++                </div>
++            <div className="grid grid-cols-2 gap-3">
++                <div>
++                  <label className="block font-bold text-slate-700 mb-1">Nama Ketua Panitia</label>
++                  <input
++                    type="text"
++                    value={settings.ketua_nama || ''}
++                    onChange={(e) => setSettings({ ...settings, ketua_nama: e.target.value })}
++                    placeholder="Nama lengkap beserta gelar"
++                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
++                  />
++                </div>
++                <div>
++                  <label className="block font-bold text-slate-700 mb-1">NIP Ketua Panitia</label>
++                  <input
++                    type="text"
++                    value={settings.ketua_nip || ''}
++                    onChange={(e) => setSettings({ ...settings, ketua_nip: e.target.value })}
++                    placeholder="19xxxxxx xxxxxx x xxx"
++                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
++                  />
++                </div>
++                <div>
++                  <label className="block font-bold text-slate-700 mb-1">Nama Korwil Kecamatan Rejoso</label>
++                  <input
++                    type="text"
++                    value={settings.korwil_nama || ''}
++                    onChange={(e) => setSettings({ ...settings, korwil_nama: e.target.value })}
++                    placeholder="Nama lengkap beserta gelar"
++                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
++                  />
++                </div>
++                <div>
++                  <label className="block font-bold text-slate-700 mb-1">NIP Korwil Kecamatan Rejoso</label>
++                  <input
++                    type="text"
++                    value={settings.korwil_nip || ''}
++                    onChange={(e) => setSettings({ ...settings, korwil_nip: e.target.value })}
++                    placeholder="19xxxxxx xxxxxx x xxx"
++                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-800"
++                  />
++                </div>
++            </div>
++          </div>
++        </div>
++
+         {/* Keamanan & Live Score Configuration */}
+         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+           <h3 className="font-extrabold text-sm text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+diff --git a/src/types/index.ts b/src/types/index.ts
+index e8d93c2..e8d6eda 100644
+--- a/src/types/index.ts
++++ b/src/types/index.ts
+@@ -78,6 +78,12 @@ export interface CompetitionSettings {
+   logo2_url: string;
+   logo3_url?: string;
+   logo4_url?: string;
++  // Data tanda tangan laporan nilai (diisi manual di Pengaturan)
++  ketua_nama?: string;
++  ketua_nip?: string;
++  korwil_nama?: string;
++  korwil_nip?: string;
++  tempat_tanggal?: string;
+   background_url?: string;
+   status_lomba: 'belum_mulai' | 'berlangsung' | 'selesai';
+   mode_hasil_akhir: boolean;
+diff --git b/src/utils/exportNilaiPdf.ts b/src/utils/exportNilaiPdf.ts
+new file mode 100644
+index 0000000..d2a7907
+--- /dev/null
++++ b/src/utils/exportNilaiPdf.ts
+@@ -0,0 +1,80 @@
++import { api } from '../services/api.ts';
++import { buildReportHtml } from './reportHtml.ts';
++import type { ReportRow } from './reportHtml.ts';
++import type { LiveScoreItem } from '../types/index.ts';
++
++const absolutize = (u?: string): string | undefined => {
++  if (!u) return undefined;
++  try {
++    return new URL(u, window.location.origin).href;
++  } catch {
++    return u;
++  }
++};
++
++const toRow = (it: LiveScoreItem): ReportRow => ({
++  nama: it.nama_sekolah,
++  mulai: it.waktu_mulai,
++  selesai: it.waktu_selesai,
++  durasi_detik: it.durasi_detik,
++  nilai: it.nilai_final ?? it.nilai_sementara,
++});
++
++/**
++ * Membuka laporan nilai (lembar Putra + lembar Putri) di jendela baru lalu memanggil
++ * dialog cetak browser. Pilih "Simpan sebagai PDF" untuk menyimpannya.
++ * Data diambil dari papan peringkat sehingga urutannya sama dengan halaman Peringkat.
++ */
++export async function exportNilaiPdf(): Promise<void> {
++  // Jendela dibuka langsung saat klik (sebelum menunggu data) agar tidak diblokir pop-up
++  const w = window.open('', '_blank');
++  if (!w) {
++    alert('Pop-up diblokir browser. Izinkan pop-up untuk situs ini, lalu coba lagi.');
++    return;
++  }
++  w.document.write('<p style="font-family:sans-serif;padding:24px">Menyiapkan laporan nilai...</p>');
++
++  try {
++    const [board, s] = await Promise.all([api.getLiveScore(), api.getSettings()]);
++
++    const html = buildReportHtml({
++      settings: {
++        judul1: s.judul1 || s.judul_lomba || '',
++        judul2: s.judul2 || s.subjudul_lomba || '',
++        logo3_url: absolutize(s.logo3_url),
++        logo4_url: absolutize(s.logo4_url),
++        ketua_nama: s.ketua_nama,
++        ketua_nip: s.ketua_nip,
++        korwil_nama: s.korwil_nama,
++        korwil_nip: s.korwil_nip,
++        tempat_tanggal: s.tempat_tanggal,
++      },
++      putra: board.putra.map(toRow),
++      putri: board.putri.map(toRow),
++    });
++
++    w.document.open();
++    w.document.write(html);
++    w.document.close();
++
++    // Tunggu logo selesai dimuat (maksimal 4 detik) sebelum mencetak
++    const imgs = Array.from(w.document.images);
++    const loaded = Promise.all(
++      imgs.map(img =>
++        img.complete
++          ? Promise.resolve()
++          : new Promise<void>(resolve => {
++              img.addEventListener('load', () => resolve());
++              img.addEventListener('error', () => resolve());
++            })
++      )
++    );
++    await Promise.race([loaded, new Promise(resolve => setTimeout(resolve, 4000))]);
++
++    w.focus();
++    w.print();
++  } catch (err: any) {
++    w.close();
++    alert(`Gagal membuat laporan nilai: ${err?.message || 'kesalahan tidak diketahui'}`);
++  }
++}
+diff --git b/src/utils/reportHtml.test.ts b/src/utils/reportHtml.test.ts
+new file mode 100644
+index 0000000..02652d5
+--- /dev/null
++++ b/src/utils/reportHtml.test.ts
+@@ -0,0 +1,62 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { buildReportHtml, formatDurasi, formatJam, formatNilai } from './reportHtml.ts';
++
++test('format jam selalu WIB', () => {
++  assert.equal(formatJam('2026-10-17T01:05:12.000Z'), '08:05:12');
++  assert.equal(formatJam(null), '-');
++  assert.equal(formatJam('bukan-tanggal'), '-');
++});
++
++test('format durasi', () => {
++  assert.equal(formatDurasi(2292, true), '38 menit 12 detik');
++  assert.equal(formatDurasi(3725, true), '1 jam 2 menit 5 detik');
++  assert.equal(formatDurasi(0, false), '-');
++});
++
++test('format nilai memakai koma desimal', () => {
++  assert.equal(formatNilai(85), '85');
++  assert.equal(formatNilai(87.5), '87,5');
++  assert.equal(formatNilai(null), '-');
++});
++
++const settings = {
++  judul1: 'JUDUL <SATU>',
++  judul2: 'Judul "dua"',
++  ketua_nama: 'Drs. A',
++  ketua_nip: '123',
++  korwil_nama: 'B, S.Pd.',
++  korwil_nip: '456',
++  tempat_tanggal: 'Rejoso, 18 Oktober 2026',
++};
++const row = { nama: 'SD <X> & Y', mulai: '2026-10-17T01:00:00Z', selesai: '2026-10-17T01:30:00Z', durasi_detik: 1800, nilai: 90 };
++
++test('laporan memuat dua lembar, kop, tanda tangan, dan aman dari HTML', () => {
++  const html = buildReportHtml({ settings, putra: [row], putri: [] });
++  assert.ok(html.includes('DAFTAR NILAI PESERTA PUTRA'));
++  assert.ok(html.includes('DAFTAR NILAI PESERTA PUTRI'));
++  assert.ok(html.includes('Belum ada data peserta.'));
++  assert.ok(html.includes('Korwil Kecamatan Rejoso,'));
++  assert.ok(!html.includes('Korwil Wilayah'));
++  assert.ok(html.includes('NIP. 123') && html.includes('NIP. 456'));
++  assert.ok(html.includes('Rejoso, 18 Oktober 2026'));
++  assert.ok(html.includes('JUDUL &lt;SATU&gt;'));
++  assert.ok(html.includes('SD &lt;X&gt; &amp; Y'));
++  assert.ok(!html.includes('<SATU>'));
++});
++
++test('nama dan NIP kosong tidak merusak tata letak', () => {
++  const html = buildReportHtml({ settings: { judul1: 'a', judul2: 'b' }, putra: [], putri: [] });
++  assert.ok(html.includes('..............................'));
++  assert.ok(!html.includes('NIP. '));
++});
++
++test('peserta yang belum mengerjakan tampil dengan tanda -', () => {
++  const html = buildReportHtml({
++    settings,
++    putra: [{ nama: 'Belum', mulai: null, selesai: null, durasi_detik: 0, nilai: null }],
++    putri: [],
++  });
++  assert.ok(html.includes('<td class="c">-</td>'));
++  assert.ok(html.includes('<td class="c b">-</td>'));
++});
+diff --git b/src/utils/reportHtml.ts b/src/utils/reportHtml.ts
+new file mode 100644
+index 0000000..21b33a4
+--- /dev/null
++++ b/src/utils/reportHtml.ts
+@@ -0,0 +1,194 @@
++// Template laporan nilai (A4). Menghasilkan HTML siap cetak / simpan PDF.
++// Murni string (tanpa React) supaya hasilnya identik di aplikasi dan di contoh PDF.
++
++export interface ReportRow {
++  nama: string;
++  mulai: string | null; // ISO
++  selesai: string | null; // ISO
++  durasi_detik: number;
++  nilai: number | null;
++}
++
++export interface ReportSettings {
++  judul1: string;
++  judul2: string;
++  logo3_url?: string;
++  logo4_url?: string;
++  ketua_nama?: string;
++  ketua_nip?: string;
++  korwil_nama?: string;
++  korwil_nip?: string;
++  tempat_tanggal?: string; // diisi manual, mis. "Rejoso, 18 Oktober 2026"
++}
++
++export interface ReportInput {
++  settings: ReportSettings;
++  putra: ReportRow[];
++  putri: ReportRow[];
++  watermark?: string; // mis. "CONTOH" (hanya untuk contoh)
++}
++
++const esc = (s: unknown) =>
++  String(s ?? '')
++    .replace(/&/g, '&amp;')
++    .replace(/</g, '&lt;')
++    .replace(/>/g, '&gt;')
++    .replace(/"/g, '&quot;');
++
++// Waktu selalu ditampilkan dalam WIB agar sama di semua komputer
++const timeFmt = new Intl.DateTimeFormat('en-GB', {
++  hour: '2-digit',
++  minute: '2-digit',
++  second: '2-digit',
++  hour12: false,
++  timeZone: 'Asia/Jakarta',
++});
++
++export function formatJam(iso: string | null): string {
++  if (!iso) return '-';
++  const d = new Date(iso);
++  return Number.isNaN(d.getTime()) ? '-' : timeFmt.format(d);
++}
++
++export function formatDurasi(detik: number, adaUjian: boolean): string {
++  if (!adaUjian) return '-';
++  const total = Math.max(0, Math.round(detik));
++  const j = Math.floor(total / 3600);
++  const m = Math.floor((total % 3600) / 60);
++  const s = total % 60;
++  return j > 0 ? `${j} jam ${m} menit ${s} detik` : `${m} menit ${s} detik`;
++}
++
++export function formatNilai(n: number | null): string {
++  if (n === null || n === undefined) return '-';
++  return (Math.round(n * 100) / 100).toString().replace('.', ',');
++}
++
++function kop(s: ReportSettings): string {
++  const logo = (url?: string, alt = '') =>
++    url ? `<img class="logo" src="${esc(url)}" alt="${esc(alt)}">` : `<div class="logo"></div>`;
++  return `
++  <div class="kop">
++    ${logo(s.logo3_url, 'Logo 3')}
++    <div class="kop-teks">
++      <div class="j1">${esc(s.judul1)}</div>
++      <div class="j2">${esc(s.judul2)}</div>
++    </div>
++    ${logo(s.logo4_url, 'Logo 4')}
++  </div>
++  <div class="garis"></div>`;
++}
++
++function tandaTangan(s: ReportSettings): string {
++  const nip = (v?: string) => (v && v.trim() ? `NIP. ${esc(v.trim())}` : '&nbsp;');
++  return `
++  <div class="ttd">
++    <div class="ttd-kol">
++      <div class="ttd-tempat">&nbsp;</div>
++      <div>Ketua Panitia,</div>
++      <div class="ttd-ruang"></div>
++      <div class="ttd-nama">${esc(s.ketua_nama || '..............................')}</div>
++      <div>${nip(s.ketua_nip)}</div>
++    </div>
++    <div class="ttd-kol">
++      <div class="ttd-tempat">${esc(s.tempat_tanggal || '')}&nbsp;</div>
++      <div>Korwil Kecamatan Rejoso,</div>
++      <div class="ttd-ruang"></div>
++      <div class="ttd-nama">${esc(s.korwil_nama || '..............................')}</div>
++      <div>${nip(s.korwil_nip)}</div>
++    </div>
++  </div>`;
++}
++
++function lembar(kategori: 'PUTRA' | 'PUTRI', rows: ReportRow[], s: ReportSettings): string {
++  const body = rows.length
++    ? rows
++        .map((r, i) => {
++          const ada = !!r.mulai;
++          return `<tr>
++        <td class="c">${i + 1}</td>
++        <td>${esc(r.nama)}</td>
++        <td class="c">${formatJam(r.mulai)}</td>
++        <td class="c">${formatJam(r.selesai)}</td>
++        <td class="c">${formatDurasi(r.durasi_detik, ada)}</td>
++        <td class="c b">${formatNilai(ada ? r.nilai : null)}</td>
++      </tr>`;
++        })
++        .join('')
++    : `<tr><td class="c" colspan="6">Belum ada data peserta.</td></tr>`;
++
++  return `
++<section class="lembar">
++  ${kop(s)}
++  <div class="judul-tabel">DAFTAR NILAI PESERTA ${kategori}</div>
++  <table>
++    <thead>
++      <tr>
++        <th style="width:10mm">No</th>
++        <th>Nama</th>
++        <th style="width:26mm">Mulai Ujian</th>
++        <th style="width:26mm">Selesai Ujian</th>
++        <th style="width:33mm">Durasi Ujian</th>
++        <th style="width:14mm">Nilai</th>
++      </tr>
++    </thead>
++    <tbody>${body}</tbody>
++  </table>
++  ${tandaTangan(s)}
++</section>`;
++}
++
++export function buildReportHtml(input: ReportInput): string {
++  const { settings: s } = input;
++  return `<!doctype html>
++<html lang="id">
++<head>
++<meta charset="utf-8">
++<title>Daftar Nilai - ${esc(s.judul2)}</title>
++<style>
++  @page { size: A4; margin: 12mm 15mm 14mm 15mm; }
++  * { box-sizing: border-box; }
++  html, body { margin: 0; padding: 0; }
++  body {
++    font-family: "Times New Roman", "Liberation Serif", "DejaVu Serif", serif;
++    font-size: 11pt; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact;
++  }
++  .lembar { page-break-after: always; }
++  .lembar:last-child { page-break-after: auto; }
++
++  .kop { display: flex; align-items: center; gap: 5mm; padding-bottom: 2.5mm; }
++  .logo { width: 24mm; height: 24mm; object-fit: contain; flex: none; }
++  .kop-teks { flex: 1; text-align: center; line-height: 1.25; }
++  .j1 { font-size: 13pt; font-weight: bold; text-transform: uppercase; }
++  .j2 { font-size: 12pt; font-weight: bold; text-transform: uppercase; }
++  .garis { border-top: 0.9mm solid #000; border-bottom: 0.3mm solid #000; height: 1.3mm; margin-bottom: 5mm; }
++
++  .judul-tabel { text-align: center; font-weight: bold; font-size: 12pt; margin: 0 0 3.5mm; }
++
++  table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
++  thead { display: table-header-group; }
++  tr { page-break-inside: avoid; }
++  th, td { border: 0.25mm solid #000; padding: 1.5mm 2mm; vertical-align: middle; }
++  th { background: #e6e6e6; text-align: center; font-weight: bold; }
++  td.c { text-align: center; }
++  td.b { font-weight: bold; }
++
++  .ttd { display: flex; justify-content: space-between; margin-top: 10mm; page-break-inside: avoid; font-size: 11pt; }
++  .ttd-kol { width: 48%; text-align: center; line-height: 1.35; }
++  .ttd-ruang { height: 22mm; }
++  .ttd-nama { font-weight: bold; text-decoration: underline; }
++
++  .wm {
++    position: fixed; top: 42%; left: 0; right: 0; text-align: center; z-index: 0;
++    font-size: 96pt; font-weight: bold; color: rgba(0,0,0,0.055); transform: rotate(-28deg);
++    pointer-events: none; letter-spacing: 2mm;
++  }
++</style>
++</head>
++<body>
++${input.watermark ? `<div class="wm">${esc(input.watermark)}</div>` : ''}
++${lembar('PUTRA', input.putra, s)}
++${lembar('PUTRI', input.putri, s)}
++</body>
++</html>`;
++}
