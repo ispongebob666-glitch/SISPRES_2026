@@ -17,6 +17,7 @@ import {
   FileSpreadsheet,
 } from 'lucide-react';
 import { api } from '../../services/api.ts';
+import { RichText } from '../common/RichText.tsx';
 import type { Question, QuestionOption } from '../../types/index.ts';
 
 export const AdminQuestions: React.FC = () => {
@@ -73,14 +74,16 @@ export const AdminQuestions: React.FC = () => {
           const cleanParts = parts.map(p => p.replace(/^"|"$/g, '').trim());
           const no_urut = Number(cleanParts[0]) || (questions.length + added + 1);
           const tipe = 'pilihan_ganda';
-          const soal = cleanParts[2] || `Soal Impor ${no_urut}`;
+          // Di sel CSV, tulis \n untuk membuat baris baru pada soal/pembahasan
+          const nl = (s: string) => s.replace(/\\n/g, '\n');
+          const soal = nl(cleanParts[2] || `Soal Impor ${no_urut}`);
           const opsiA = cleanParts[3] || 'A';
           const opsiB = cleanParts[4] || 'B';
           const opsiC = cleanParts[5] || 'C';
           const opsiD = cleanParts[6] || 'D';
           const kunci = (cleanParts[7] || 'A').toUpperCase();
           const bobot = Number(cleanParts[8]) || 5;
-          const pembahasan = cleanParts[9] || '';
+          const pembahasan = nl(cleanParts[9] || '');
 
           await api.createQuestion({
             no_urut,
@@ -497,7 +500,7 @@ export const AdminQuestions: React.FC = () => {
 
               {/* Soal Body */}
               <div className="mt-3 text-sm font-semibold text-slate-900 leading-relaxed">
-                {q.soal}
+                <RichText text={q.soal} />
               </div>
 
               {q.gambar && (
@@ -524,7 +527,7 @@ export const AdminQuestions: React.FC = () => {
                       }`}>
                         {opt.label}
                       </span>
-                      <span className="truncate">{opt.teks}</span>
+                      <span className="truncate"><RichText text={opt.teks} multiline={false} /></span>
                       {isKey && <span className="ml-auto text-[10px] text-emerald-700 font-bold uppercase">(KUNCI)</span>}
                     </div>
                   );

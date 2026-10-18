@@ -17,6 +17,7 @@ import {
   Award,
 } from 'lucide-react';
 import { api } from '../../services/api.ts';
+import { RichText } from '../common/RichText.tsx';
 import type { Participant, Question, Exam } from '../../types/index.ts';
 
 interface ExamViewProps {
@@ -614,7 +615,7 @@ export const ExamView: React.FC<ExamViewProps> = ({ participant, onFinish, onLog
 
                 {/* Question Text */}
                 <div className="text-base sm:text-lg font-semibold text-slate-900 leading-relaxed mb-6">
-                  {currentQuestion.soal}
+                  <RichText text={currentQuestion.soal} />
                 </div>
 
                 {/* Optional Image at Bottom */}
@@ -653,7 +654,7 @@ export const ExamView: React.FC<ExamViewProps> = ({ participant, onFinish, onLog
 
                         {/* Option Text */}
                         <div className="text-sm font-semibold text-slate-800 flex-1 leading-snug">
-                          {opt.teks}
+                          <RichText text={opt.teks} />
                         </div>
 
                         {opt.gambar && (
